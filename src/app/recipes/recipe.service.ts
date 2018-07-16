@@ -2,12 +2,15 @@ import {Recipe} from './recipe.model';
 import {Ingredient} from '../shared/ingredient.model';
 import {Subject} from 'rxjs';
 import {Injectable} from '@angular/core';
+import {Http, Response} from '@angular/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
   recipesChanged = new Subject<Recipe[]>();
+
+  constructor(private http: Http) {}
 
   private recipes: Recipe[] = [
     new Recipe('Test Recipe', ' A test recipe', 'https://upload.wikimedia.org/wikipedia/commons/3/39/Recipe.jpg',
@@ -27,6 +30,20 @@ export class RecipeService {
 
   recipeChanged() {
     this.recipesChanged.next(this.recipes.slice());
+  }
+
+  saveRecipes() {
+    return this.http.put('https://.firebaseio.com/recipes.json', this.recipes);
+  }
+
+  fetchRecipes() {
+    this.http.get('https://.firebaseio.com/recipes.json')
+      .subscribe(
+      (response: Response) => {
+        this.recipes = (<Recipe[]>response.json());
+        this.recipeChanged();
+      }
+    );
   }
 
   addRecipe(recipe: Recipe) {
