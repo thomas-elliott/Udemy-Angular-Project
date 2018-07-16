@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {Response} from '@angular/http';
 import {RecipeService} from '../recipes/recipe.service';
+import {AuthService} from '../auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,7 @@ import {RecipeService} from '../recipes/recipe.service';
 export class HeaderComponent {
   @Output() navSection = new EventEmitter<string>();
 
-  constructor(private recipeService: RecipeService) {}
+  constructor(private recipeService: RecipeService, private authService: AuthService) {}
 
   onNav(section: string) {
     this.navSection.emit(section);
@@ -24,5 +25,9 @@ export class HeaderComponent {
 
   onLoad() {
     this.recipeService.fetchRecipes();
+  }
+
+  onLogout() {
+    this.authService.logout();
   }
 }
