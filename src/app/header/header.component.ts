@@ -1,4 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
+import {Response} from '@angular/http';
+import {RecipeService} from '../recipes/recipe.service';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +10,19 @@ import {Component, EventEmitter, Output} from '@angular/core';
 export class HeaderComponent {
   @Output() navSection = new EventEmitter<string>();
 
+  constructor(private recipeService: RecipeService) {}
+
   onNav(section: string) {
     this.navSection.emit(section);
+  }
+
+  onSave() {
+    this.recipeService.saveRecipes().subscribe(
+      (response: Response) => { console.log(response); }
+    );
+  }
+
+  onLoad() {
+    this.recipeService.fetchRecipes();
   }
 }
