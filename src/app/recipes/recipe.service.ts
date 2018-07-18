@@ -2,8 +2,8 @@ import {Recipe} from './recipe.model';
 import {Ingredient} from '../shared/ingredient.model';
 import {Subject} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
 import {AuthService} from '../auth/auth.service';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import {AuthService} from '../auth/auth.service';
 export class RecipeService {
   recipesChanged = new Subject<Recipe[]>();
 
-  constructor(private http: Http, private authService: AuthService) {}
+  constructor(private httpClient: HttpClient, private authService: AuthService) {}
 
   private recipes: Recipe[] = [
     new Recipe('Test Recipe', ' A test recipe', 'https://upload.wikimedia.org/wikipedia/commons/3/39/Recipe.jpg',
@@ -35,16 +35,16 @@ export class RecipeService {
 
   saveRecipes() {
     const token = this.authService.getToken();
-    return this.http.put('https://ng-recipe-book-b919c.firebaseio.com/recipes.json?auth=' + token, this.recipes);
+    return this.httpClient.put('https://ng-recipe-book-b919c.firebaseio.com/recipes.json?auth=' + token, this.recipes);
   }
 
   fetchRecipes() {
     const token = this.authService.getToken();
 
-    this.http.get('https://ng-recipe-book-b919c.firebaseio.com/recipes.json?auth=' + token)
+    this.httpClient.get<Recipe[]>('https://ng-recipe-book-b919c.firebaseio.com/recipes.json?auth=' + token)
       .subscribe(
-      (response: Response) => {
-        this.recipes = (<Recipe[]>response.json());
+      (response) => {
+        this.recipes = response;
         this.recipeChanged();
       }
     );
